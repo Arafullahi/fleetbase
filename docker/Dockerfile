@@ -64,10 +64,13 @@ WORKDIR /fleetbase/api
 RUN if [ -n "$GITHUB_AUTH_KEY" ]; then echo "{\"github-oauth\": {\"github.com\": \"$GITHUB_AUTH_KEY\"}}" > auth.json; fi
 
 # Optimize Composer Dependency Installation
-COPY --chown=www-data:www-data ./api/composer.json ./api/composer.lock /fleetbase/api/
-
+COPY --chown=www-data:www-data ./api/composer.json  /fleetbase/api/
+WORKDIR /fleetbase/
+COPY --chown=www-data:www-data ./packages/ /fleetbase/packages/
+# Set working directory
+WORKDIR /fleetbase/api
 # Pre-install Composer dependencies
-RUN su www-data -s /bin/sh -c "composer install --no-scripts --optimize-autoloader --no-dev"
+RUN su www-data -s /bin/sh -c "composer install --no-scripts --optimize-autoloader "
 
 # Setup application
 COPY --chown=www-data:www-data ./api /fleetbase/api
